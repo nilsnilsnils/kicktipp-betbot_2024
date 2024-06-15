@@ -1,6 +1,9 @@
-![kicktipp-img]
+Usage/Verwendung für alle Spieltage
 
-[kicktipp-img]: https://www.kicktipp.de/assets/img/cb1059167120/assets/img/illu/startseite.png "Kicktipp"
+Pro Spieltag folgendes ausführen
+╰─ python ./kicktippbb.py --use-login-token <token> <community> --matchday=1-N
+
+
 
 kicktipp-betbot
 ===============
