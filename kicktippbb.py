@@ -103,7 +103,6 @@ def parse_match_rows(browser: RoboBrowser, community, matchday = None):
     content = get_kicktipp_content(browser)
     rows = get_table_rows(content)
 
-    #print(rows)
     matchtuple = list()
     lastmatch = None
     for row in rows:
@@ -116,8 +115,6 @@ def parse_match_rows(browser: RoboBrowser, community, matchday = None):
         try:
             odds=[odd.replace(" ","") for odd in row[4].get_text().split("/")]
             odds = remove_prefix_from_list(odds, "Quote:")
-
-            print(odds)
             match = Match(row[1].get_text(), row[2].get_text(), row[0].get_text(
             ), odds[0], odds[1], odds[2])
         except:
@@ -167,9 +164,6 @@ def get_communities(browser: RoboBrowser, desired_communities: list):
         if hreftext == link.get_text():
             return True
         else:
-            print(hreftext)
-            print(link)
-
             linkdiv = link.find('div', {'class': "menu-title-mit-tippglocke"})
             return linkdiv is not None
     community_list = [gethreftext(link)
@@ -273,7 +267,7 @@ def main(arguments):
     # Which communities are considered, fail if no were found
     if not communities:
         communities = get_communities(browser, communities)
-        
+
     if(len(communities) == 0):
         exit("No community found!?")
 
