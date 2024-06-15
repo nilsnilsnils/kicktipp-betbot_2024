@@ -91,6 +91,8 @@ def get_table_rows(soup):
     tbody = soup.find('tbody')
     return [tr.find_all('td') for tr in tbody.find_all('tr')]
 
+def remove_prefix_from_list(lst, prefix):
+    return [s[len(prefix):] if s.startswith(prefix) else s for s in lst]
 
 def parse_match_rows(browser: RoboBrowser, community, matchday = None):
     """Fetch latest odds for each match
@@ -101,6 +103,7 @@ def parse_match_rows(browser: RoboBrowser, community, matchday = None):
     content = get_kicktipp_content(browser)
     rows = get_table_rows(content)
 
+    #print(rows)
     matchtuple = list()
     lastmatch = None
     for row in rows:
@@ -108,8 +111,13 @@ def parse_match_rows(browser: RoboBrowser, community, matchday = None):
             'input', id=lambda x: x and x.endswith('_heimTipp'))
         gasttipp = row[3].find(
             'input', id=lambda x: x and x.endswith('_gastTipp'))
+        
+        
         try:
             odds=[odd.replace(" ","") for odd in row[4].get_text().split("/")]
+            odds = remove_prefix_from_list(odds, "Quote:")
+
+            print(odds)
             match = Match(row[1].get_text(), row[2].get_text(), row[0].get_text(
             ), odds[0], odds[1], odds[2])
         except:
@@ -152,15 +160,22 @@ def get_communities(browser: RoboBrowser, desired_communities: list):
     links = content.find_all('a')
     def gethreftext(link): return link.get('href').replace("/", "")
 
+   
     def is_community(link):
         hreftext = gethreftext(link)
+        
         if hreftext == link.get_text():
             return True
         else:
+            print(hreftext)
+            print(link)
+
             linkdiv = link.find('div', {'class': "menu-title-mit-tippglocke"})
-            return linkdiv and linkdiv.get_text() == hreftext
+            return linkdiv is not None
     community_list = [gethreftext(link)
                       for link in links if is_community(link)]
+    
+    
     if len(desired_communities) > 0:
         return intersection(community_list, desired_communities)
     return community_list
@@ -256,7 +271,9 @@ def main(arguments):
     browser.session.cookies['login'] = token
 
     # Which communities are considered, fail if no were found
-    communities = get_communities(browser, communities)
+    if not communities:
+        communities = get_communities(browser, communities)
+        
     if(len(communities) == 0):
         exit("No community found!?")
 
