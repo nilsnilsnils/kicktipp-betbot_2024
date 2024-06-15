@@ -1,4 +1,4 @@
-Usage/Verwendung für alle Spieltage
+Verwendung für alle Spieltage
 
 Pro Spieltag folgendes ausführen
 ╰─ python ./kicktippbb.py --use-login-token <token> <community> --matchday=1-N
